@@ -16,7 +16,7 @@ var sessionId = $"{driverOne.SessionId}";
 var addressOfRemoteServer = driverOne.GetEndpoint();
 var timeout = TimeSpan.FromSeconds(60);
 var commandExecutor = new LocalExecutor(sessionId, addressOfRemoteServer, timeout);
-var desiredCapabilities = (driverOne as RemoteWebDriver)?.Capabilities;;
+var desiredCapabilities = (driverOne as RemoteWebDriver)?.Capabilities;
 
 // mount browser one with browser two
 _ = new RemoteWebDriver(commandExecutor, desiredCapabilities)
