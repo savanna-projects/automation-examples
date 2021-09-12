@@ -16,7 +16,7 @@ var sessionId = $"{driverOne.SessionId}";
 var addressOfRemoteServer = driverOne.GetEndpoint();
 var timeout = TimeSpan.FromSeconds(60);
 var commandExecutor = new LocalExecutor(sessionId, addressOfRemoteServer, timeout);
-var desiredCapabilities = driverOne.GetCapabilities();
+var desiredCapabilities = (driverOne as RemoteWebDriver)?.Capabilities;;
 
 // mount browser one with browser two
 _ = new RemoteWebDriver(commandExecutor, desiredCapabilities)
@@ -98,16 +98,6 @@ namespace ReuseWebDrver
 
             // result
             return endpoint.ServiceUrl;
-        }
-
-        public static ICapabilities GetCapabilities(this IWebDriver driver)
-        {
-            // get RemoteWebDriver type
-            var remoteWebDriver = GetRemoteWebDriver(driver.GetType());
-
-            // get
-            const BindingFlags Flags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
-            return remoteWebDriver.GetField("capabilities", Flags).GetValue(driver) as ICapabilities;
         }
 
         private static Type GetRemoteWebDriver(Type type)
