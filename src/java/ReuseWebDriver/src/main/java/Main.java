@@ -1,6 +1,6 @@
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.remote.CommandExecutor;
 import org.openqa.selenium.remote.HttpCommandExecutor;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -11,15 +11,15 @@ import java.net.URL;
 public class Main {
     public static void main(String[] args) throws NoSuchFieldException, IllegalAccessException {
         // start with browser one
-        System.setProperty("webdriver.chrome.driver", "D:\\AutomationEnvironment\\WebDrivers\\chromedriver.exe");
-        ChromeDriver driverOne = new ChromeDriver();
+        System.setProperty("webdriver.chrome.driver", "D:\\AutomationEnvironment\\WebDrivers\\msedgedriver.exe");
+        EdgeDriver driverOne = new EdgeDriver();
         driverOne.manage().window().maximize();
 
         // setup: get information to initialize driver two
         String sessionId = driverOne.getSessionId().toString();
         URL addressOfRemoteServer = getEndpoint(driverOne);
         Capabilities desiredCapabilities = driverOne.getCapabilities();
-        CommandExecutor commandExecutor = new LocalExecutor(sessionId, addressOfRemoteServer, desiredCapabilities);
+        CommandExecutor commandExecutor = new LocalExecutor(sessionId, addressOfRemoteServer);
 
         // mount browser one with browser two
         RemoteWebDriver driverTwo = new RemoteWebDriver(commandExecutor, desiredCapabilities);
@@ -31,7 +31,7 @@ public class Main {
 
     private static URL getEndpoint(WebDriver driver) throws NoSuchFieldException, IllegalAccessException {
         // get RemoteWebDriver type
-        Class remoteWebDriver = getRemoteWebDriver(driver.getClass());
+        Class<?> remoteWebDriver = getRemoteWebDriver(driver.getClass());
 
         // get this instance executor > get this instance internalExecutor
         Field executorField = remoteWebDriver.getDeclaredField("executor");
@@ -46,7 +46,7 @@ public class Main {
         return (URL) endpointField.get(executor);
     }
 
-    private static Class getRemoteWebDriver(Class type) {
+    private static Class<?> getRemoteWebDriver(Class<?> type) {
         // if not a remote web driver, return the type used for the call
         if (!RemoteWebDriver.class.isAssignableFrom(type)) {
             return type;
@@ -61,7 +61,7 @@ public class Main {
         return type;
     }
 
-    private static Class getCommandExecutor(Class type) {
+    private static Class<?> getCommandExecutor(Class<?> type) {
         // if not a remote web driver, return the type used for the call
         if (!HttpCommandExecutor.class.isAssignableFrom(type)) {
             return type;
